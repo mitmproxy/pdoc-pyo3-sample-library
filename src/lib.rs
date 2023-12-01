@@ -4,9 +4,20 @@ use pyo3::prelude::*;
 #[pymodule]
 fn pdoc_pyo3_sample_library(py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
-    let child_module = PyModule::new(py, "child_module")?;
-    child_module.add_function(wrap_pyfunction!(func, child_module)?)?;
-    m.add_submodule(child_module)?;
+    let submodule = PyModule::new(py, "submodule")?;
+    submodule.add_function(wrap_pyfunction!(func, submodule)?)?;
+    m.add_submodule(submodule)?;
+
+    let subsubmodule = PyModule::new(py, "subsubmodule")?;
+    subsubmodule.add_function(wrap_pyfunction!(func, subsubmodule)?)?;
+    submodule.add_submodule(subsubmodule)?;
+
+    let explicit_submodule = PyModule::new(py, "explicit_submodule")?;
+    explicit_submodule.add_function(wrap_pyfunction!(func, explicit_submodule)?)?;
+    m.add_submodule(explicit_submodule)?;
+    py.import("sys")?
+        .getattr("modules")?
+        .set_item("pdoc_pyo3_sample_library.explicit_submodule", explicit_submodule)?;
 
     Ok(())
 }
