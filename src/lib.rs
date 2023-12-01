@@ -1,14 +1,17 @@
+// Taken from https://pyo3.rs/v0.20.0/module.html?highlight=submodule#python-submodules
 use pyo3::prelude::*;
 
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
+#[pymodule]
+fn pdoc_pyo3_sample_library(py: Python<'_>, m: &PyModule) -> PyResult<()> {
+
+    let child_module = PyModule::new(py, "child_module")?;
+    child_module.add_function(wrap_pyfunction!(func, child_module)?)?;
+    m.add_submodule(child_module)?;
+
+    Ok(())
 }
 
-/// A Python module implemented in Rust.
-#[pymodule]
-fn pdoc_pyo3_sample_library(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
-    Ok(())
+#[pyfunction]
+fn func() -> String {
+    "func".to_string()
 }
