@@ -4,10 +4,9 @@ on: ["push"]
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
-  build-and-publish:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -44,6 +43,21 @@ jobs:
 
       - run: maturin build --release ${{ matrix.args }}
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: target/wheels/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: target/wheels
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
         with:
