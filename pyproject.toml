@@ -11,6 +11,8 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
+[project.urls]
+Source = "https://github.com/mitmproxy/pdoc-pyo3-sample-library"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
