@@ -1,0 +1,50 @@
+name: CI
+
+on: ["push"]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-publish:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+          - os: ubuntu-latest
+            args: --compatibility manylinux2014 --zig --sdist
+          - os: macos-latest
+            args: --target universal2-apple-darwin
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: rustup toolchain install stable --profile minimal
+      - run: rustup default stable
+      - if: runner.os == 'macOS'
+        run: rustup target add aarch64-apple-darwin
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install maturin[zig] from PyPI
+        uses: install-pinned/maturin-with-zig@afa2e7d89f6e72351177ec169bcd766c0b0dfa36  # 1.3.2
+
+      - name: Bump version
+        shell: python
+        run: |
+          from pathlib import Path
+          import os
+          toml = Path("Cargo.toml").read_text()
+          toml = toml.replace('.0"  # autoupdated', '.%s"' % os.environ["GITHUB_RUN_NUMBER"])
+          Path("Cargo.toml").write_text(toml)
+
+      - run: maturin build --release ${{ matrix.args }}
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@2f6f737ca5f74c637829c0f5c3acd0e29ea5e8bf
+        with:
+          packages-dir: target/wheels/

@@ -1,0 +1,12 @@
+[package]
+name = "pdoc-pyo3-sample-library"
+version = "0.1.0"  # autoupdated
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "pdoc_pyo3_sample_library"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = {version = "0.20.0", features = ["abi3", "abi3-py38", "extension-module"] }
