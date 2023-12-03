@@ -19,9 +19,10 @@ fn pdoc_pyo3_sample_library(py: Python<'_>, m: &PyModule) -> PyResult<()> {
         .getattr("modules")?
         .set_item("pdoc_pyo3_sample_library.explicit_submodule", explicit_submodule)?;
 
-    let correct_name_submodule = PyModule::new(py, "pdoc_pyo3_sample_library.correct_name_submodule")?;
+    let correct_name_submodule = PyModule::new(py, "correct_name_submodule")?;
     correct_name_submodule.add_function(wrap_pyfunction!(func, correct_name_submodule)?)?;
     m.add_submodule(correct_name_submodule)?;
+    correct_name_submodule.setattr("__name__", "pdoc_pyo3_sample_library.correct_name_submodule")?;
 
     Ok(())
 }
