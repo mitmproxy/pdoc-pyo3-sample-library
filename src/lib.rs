@@ -2,6 +2,7 @@
 use pyo3::prelude::*;
 
 #[pymodule]
+/// This is a PyO3 demo library used to verify that submodules are handled properly.
 fn pdoc_pyo3_sample_library(py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     let submodule = PyModule::new(py, "submodule")?;
@@ -30,6 +31,7 @@ fn pdoc_pyo3_sample_library(py: Python<'_>, m: &PyModule) -> PyResult<()> {
 }
 
 #[pyfunction]
+/// A method implemented in Rust.
 fn func() -> String {
     "func".to_string()
 }
